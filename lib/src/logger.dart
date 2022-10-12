@@ -45,7 +45,8 @@ class Log {
     }
   }
 
-  static void _log(LogLevel logLevel, Object message, [Error? error, StackTrace? stackTrace]) {
+  static void _log(LogLevel logLevel, Object message,
+      [Error? error, StackTrace? stackTrace]) {
     print('${logLevel.name} $message');
     if (null != error) Future.error(error, stackTrace);
   }

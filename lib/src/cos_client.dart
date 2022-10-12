@@ -49,7 +49,14 @@ class CosConfig {
     sRegion ??= region;
     if (null == sDomain) {
       assert(null != sRegion, 'region, null given!');
-      if (['cn-south', 'cn-south-2', 'cn-north', 'cn-east', 'cn-southwest', 'sg'].contains(sRegion)) {
+      if ([
+        'cn-south',
+        'cn-south-2',
+        'cn-north',
+        'cn-east',
+        'cn-southwest',
+        'sg'
+      ].contains(sRegion)) {
         sDomain = '$sRegion.myqcloud.com';
       } else {
         sDomain = 'cos.$sRegion.myqcloud.com';
@@ -57,7 +64,9 @@ class CosConfig {
       assert(null != bucket, 'bucket, null given!');
       sDomain = '$bucket.$sDomain';
     }
-    var fixPath = null != path && path.isNotEmpty ? (!path.startsWith('/') ? '/$path' : path) : '';
+    var fixPath = null != path && path.isNotEmpty
+        ? (!path.startsWith('/') ? '/$path' : path)
+        : '';
     String requestUrl = '$scheme://$sDomain$fixPath';
     return requestUrl;
   }
@@ -73,7 +82,8 @@ class CosClient {
   set logLevel(LogLevel level) => Log.logLevel = level;
 
   /// list_buckets 获取用户的 bucket 列表 action cos:GetService
-  Future<CosResponse<GetServiceResult>> getService({String? region, Map<String, String>? headers}) async {
+  Future<CosResponse<GetServiceResult>> getService(
+      {String? region, Map<String, String>? headers}) async {
     final domain = cosConfig.serviceDomain;
     String url;
     final protocol = cosConfig.scheme ?? 'https';
@@ -174,7 +184,8 @@ class CosClient {
       params['versionId'] = versionId ?? finalHeaders['versionId'];
       finalHeaders.remove('versionId');
     } else {
-      if (null != versionId && versionId.isNotEmpty) params['versionId'] = versionId;
+      if (null != versionId && versionId.isNotEmpty)
+        params['versionId'] = versionId;
     }
     headers = finalHeaders;
     var url = cosConfig.url(bucket: bucket, path: objectKey, sRegion: region);
@@ -211,10 +222,12 @@ class CosClient {
       params['versionId'] = versionId ?? headers['versionId'];
       headers.remove('versionId');
     } else {
-      if (null != versionId && versionId.isNotEmpty) params['versionId'] = versionId;
+      if (null != versionId && versionId.isNotEmpty)
+        params['versionId'] = versionId;
     }
     var url = cosConfig.url(bucket: bucket, path: objectKey, sRegion: region);
-    var res = await _sendRequest(method: 'DELETE', headers: headers, url: url, key: objectKey);
+    var res = await _sendRequest(
+        method: 'DELETE', headers: headers, url: url, key: objectKey);
     Log.d('deleteObject response:$res');
     return CosResponse(
       statusCode: res.statusCode,
@@ -252,8 +265,14 @@ class CosClient {
     Map<String, String?> params = {};
     params['delete'] = '';
     headers[HttpHeaders.contentTypeHeader] = 'application/xml';
-    headers[HttpHeaders.contentMD5Header] = convert.base64.encode(md5.convert(xmlData.codeUnits).bytes);
-    var res = await _sendRequest(method: 'POST', headers: headers, url: url, query: params, data: xmlData);
+    headers[HttpHeaders.contentMD5Header] =
+        convert.base64.encode(md5.convert(xmlData.codeUnits).bytes);
+    var res = await _sendRequest(
+        method: 'POST',
+        headers: headers,
+        url: url,
+        query: params,
+        data: xmlData);
     Log.d('deleteMultipleObject response:$res');
     var xml = XmlDocument.parse(res.data);
     var deletedElements = xml.rootElement.findAllElements('Deleted');
@@ -265,7 +284,8 @@ class CosClient {
             key: ele.getElement('Key')?.text ?? '',
             versionId: ele.getElement('VersionId')?.text,
             deleteMarker: ele.getElement('DeleteMarker')?.text == 'true',
-            deleteMarkerVersionId: ele.getElement('DeleteMarkerVersionId')?.text));
+            deleteMarkerVersionId:
+                ele.getElement('DeleteMarkerVersionId')?.text));
       }
     }
 
@@ -303,10 +323,12 @@ class CosClient {
       params['versionId'] = versionId ?? headers['versionId'];
       headers.remove('versionId');
     } else {
-      if (null != versionId && versionId.isNotEmpty) params['versionId'] = versionId;
+      if (null != versionId && versionId.isNotEmpty)
+        params['versionId'] = versionId;
     }
     var url = cosConfig.url(bucket: bucket, path: objectKey, sRegion: region);
-    var res = await _sendRequest(method: 'HEAD', headers: headers, url: url, key: objectKey);
+    var res = await _sendRequest(
+        method: 'HEAD', headers: headers, url: url, key: objectKey);
     Log.d('headObject response:$res');
     return CosResponse<HeadObjectResult>(
         statusCode: res.statusCode,
@@ -332,14 +354,20 @@ class CosClient {
     params['tagging'] = '';
     var url = cosConfig.url(bucket: bucket, path: objectKey, sRegion: region);
     Log.d('getObjectTagging url:$url headers:$headers');
-    var res = await _sendRequest(method: 'GET', headers: headers, url: url, key: objectKey, query: params);
+    var res = await _sendRequest(
+        method: 'GET',
+        headers: headers,
+        url: url,
+        key: objectKey,
+        query: params);
     Log.d('getObjectTagging response:$res');
     var xml = XmlDocument.parse(res.data);
     var tagElements = xml.findAllElements('Tag');
     List<Tag> tags = [];
     for (var element in tagElements) {
-      tags.add(
-          Tag(key: element.getElement('Key')?.text ?? '', value: element.getElement('Value')?.text ?? ''));
+      tags.add(Tag(
+          key: element.getElement('Key')?.text ?? '',
+          value: element.getElement('Value')?.text ?? ''));
     }
     return CosResponse<GetObjectTaggingResult>(
         statusCode: res.statusCode,
@@ -379,7 +407,12 @@ class CosClient {
     var xmlData = xmlBuilder.buildDocument();
     Log.d('putObjectTagging xmlData:$xmlData');
     var res = await _sendRequest(
-        method: 'PUT', headers: headers, url: url, key: objectKey, query: params, data: xmlData.toString());
+        method: 'PUT',
+        headers: headers,
+        url: url,
+        key: objectKey,
+        query: params,
+        data: xmlData.toString());
     Log.d('putObjectTagging response:$res');
     return CosResponse<PutObjectTaggingResult>(
         statusCode: res.statusCode,
@@ -402,7 +435,12 @@ class CosClient {
     params['tagging'] = '';
     var url = cosConfig.url(bucket: bucket, path: objectKey, sRegion: region);
     Log.d('deleteObjectTagging url:$url headers:$headers');
-    var res = await _sendRequest(method: 'DELETE', headers: headers, url: url, key: objectKey, query: params);
+    var res = await _sendRequest(
+        method: 'DELETE',
+        headers: headers,
+        url: url,
+        key: objectKey,
+        query: params);
     Log.d('deleteObjectTagging response:$res');
     return CosResponse<DeleteObjectTaggingResult>(
         statusCode: res.statusCode,
@@ -434,16 +472,20 @@ class CosClient {
     };
     var url = cosConfig.url(bucket: bucket, sRegion: region);
     Log.d('listObjects url:$url headers:$headers');
-    var res = await _sendRequest(method: 'GET', headers: headers, url: url, query: params);
+    var res = await _sendRequest(
+        method: 'GET', headers: headers, url: url, query: params);
     Log.d('listObjects response:$res');
     var xml = XmlDocument.parse(res.data);
     var name = xml.rootElement.getElement('Name')?.text ?? '';
     var isTruncated = xml.rootElement.getElement('IsTruncated')?.text == 'true';
     String? nextMarker = xml.rootElement.getElement('NextMarker')?.text;
-    var commonPrefixesIterable = xml.rootElement.findAllElements('CommonPrefixes');
-    List<CommonPrefixes>? commonPrefixes = commonPrefixesIterable.isNotEmpty ? [] : null;
+    var commonPrefixesIterable =
+        xml.rootElement.findAllElements('CommonPrefixes');
+    List<CommonPrefixes>? commonPrefixes =
+        commonPrefixesIterable.isNotEmpty ? [] : null;
     for (var element in commonPrefixesIterable) {
-      commonPrefixes?.add(CommonPrefixes(element.getElement('Prefix')?.text ?? ''));
+      commonPrefixes
+          ?.add(CommonPrefixes(element.getElement('Prefix')?.text ?? ''));
     }
     var contentsIterable = xml.rootElement.findAllElements('Contents');
     List<CosObject> contents = [];
@@ -454,11 +496,13 @@ class CosClient {
           lastModified: element.getElement('LastModified')?.text ?? '',
           eTag: element.getElement('ETag')?.text ?? '',
           size: element.getElement('Size')?.text ?? '0',
-          storageClass: cosStorageClassNameToType(element.getElement('StorageClass')?.text ?? ''),
+          storageClass: cosStorageClassNameToType(
+              element.getElement('StorageClass')?.text ?? ''),
           storageTier: element.getElement('StorageTier')?.text,
           owner: Owner(
               id: ownerElement?.getElement('ID')?.text ?? '',
-              displayName: ownerElement?.getElement('DisplayName')?.text ?? '')));
+              displayName:
+                  ownerElement?.getElement('DisplayName')?.text ?? '')));
     }
     return CosResponse<ListBucketObjectsResult>(
         statusCode: res.statusCode,
@@ -500,16 +544,20 @@ class CosClient {
     };
     var url = cosConfig.url(bucket: bucket, sRegion: region);
     Log.d('listObjectVersions url:$url headers:$headers');
-    var res = await _sendRequest(method: 'GET', headers: headers, url: url, query: params);
+    var res = await _sendRequest(
+        method: 'GET', headers: headers, url: url, query: params);
     Log.d('listObjectVersions response:$res');
     var xml = XmlDocument.parse(res.data);
     var name = xml.rootElement.getElement('Name')?.text ?? '';
     var isTruncated = xml.rootElement.getElement('IsTruncated')?.text == 'true';
     String? nextMarker = xml.rootElement.getElement('NextMarker')?.text;
-    var commonPrefixesIterable = xml.rootElement.findAllElements('CommonPrefixes');
-    List<CommonPrefixes>? commonPrefixes = commonPrefixesIterable.isNotEmpty ? [] : null;
+    var commonPrefixesIterable =
+        xml.rootElement.findAllElements('CommonPrefixes');
+    List<CommonPrefixes>? commonPrefixes =
+        commonPrefixesIterable.isNotEmpty ? [] : null;
     for (var element in commonPrefixesIterable) {
-      commonPrefixes?.add(CommonPrefixes(element.getElement('Prefix')?.text ?? ''));
+      commonPrefixes
+          ?.add(CommonPrefixes(element.getElement('Prefix')?.text ?? ''));
     }
     var versionsIterable = xml.rootElement.findAllElements('Contents');
     List<CosObjectVersion> versions = [];
@@ -521,12 +569,14 @@ class CosClient {
           isLatest: element.getElement('IsLatest')?.text == 'true',
           eTag: element.getElement('ETag')?.text ?? '',
           size: element.getElement('Size')?.text ?? '0',
-          storageClass: cosStorageClassNameToType(element.getElement('StorageClass')?.text ?? ''),
+          storageClass: cosStorageClassNameToType(
+              element.getElement('StorageClass')?.text ?? ''),
           storageTier: element.getElement('StorageTier')?.text,
           versionId: element.getElement('VersionId')?.text,
           owner: Owner(
               id: ownerElement?.getElement('ID')?.text ?? '',
-              displayName: ownerElement?.getElement('DisplayName')?.text ?? '')));
+              displayName:
+                  ownerElement?.getElement('DisplayName')?.text ?? '')));
     }
     var deleteMarkerIterable = xml.rootElement.findAllElements('DeleteMarker');
     List<DeleteMarker> deleteMarkers = [];
@@ -539,7 +589,8 @@ class CosClient {
           versionId: element.getElement('VersionId')?.text,
           owner: Owner(
               id: ownerElement?.getElement('ID')?.text ?? '',
-              displayName: ownerElement?.getElement('DisplayName')?.text ?? '')));
+              displayName:
+                  ownerElement?.getElement('DisplayName')?.text ?? '')));
     }
     return CosResponse<ListObjectVersionsResult>(
         statusCode: res.statusCode,
@@ -570,14 +621,17 @@ class CosClient {
     );
   }
 
-  List<Map<String, String?>> _fetchObjVersionIdFromHeader(Map<String, String?> headers,
-      {Map<String, String?>? params, String? versionId}) {
+  List<Map<String, String?>> _fetchObjVersionIdFromHeader(
+      Map<String, String?> headers,
+      {Map<String, String?>? params,
+      String? versionId}) {
     params ??= {};
     if (headers.containsKey('versionId')) {
       params['versionId'] = versionId ?? headers['versionId'];
       headers.remove('versionId');
     } else {
-      if (null != versionId && versionId.isNotEmpty) params['versionId'] = versionId;
+      if (null != versionId && versionId.isNotEmpty)
+        params['versionId'] = versionId;
     }
     return [headers, params];
   }
@@ -601,15 +655,17 @@ class CosClient {
       ProgressCallback? onReceiveProgress}) async {
     query ??= {};
     Log.d('request query---$query');
-    String sQuery = query.isNotEmpty ? query.keys.map((key) => '$key=${query![key]}').join('&') : '';
+    String sQuery = query.isNotEmpty
+        ? query.keys.map((key) => '$key=${query![key]}').join('&')
+        : '';
     Uri uri = Uri.parse('$url${sQuery.isNotEmpty ? '?' : ''}$sQuery');
     headers ??= {};
     headers[HttpHeaders.hostHeader] = uri.host;
     if (null != cosConfig.token && cosConfig.token!.isNotEmpty) {
       headers[CosHeaders.xCosSecurityToken] = cosConfig.token;
     }
-    var authorization =
-        CosS3Auth.getAuth(cosConfig, headers: headers, method: method, key: key, params: query);
+    var authorization = CosS3Auth.getAuth(cosConfig,
+        headers: headers, method: method, key: key, params: query);
     headers['Authorization'] = authorization;
 
     Log.d('request uri---${uri.toString()}');
@@ -636,12 +692,16 @@ class CosClient {
         message['requestid'] = res.headers[CosHeaders.xCosRequestId] ?? '';
         message['traceid'] = res.headers[CosHeaders.xCosTraceId] ?? '';
         Log.w(message);
-        throw CosServiceError(method: method, statusCode: res.statusCode, message: message);
+        throw CosServiceError(
+            method: method, statusCode: res.statusCode, message: message);
       }
       var data = res.data;
       if (null != data) {
         Log.d('sendRequest err data $data');
-        if (data is String && data.isNotEmpty && data.contains('<') && data.contains('>')) {
+        if (data is String &&
+            data.isNotEmpty &&
+            data.contains('<') &&
+            data.contains('>')) {
           var xml = XmlDocument.parse(data);
           message['Code'] = xml.rootElement.getElement('Code')?.text;
           message['Message'] = xml.rootElement.getElement('Message')?.text;
@@ -650,7 +710,8 @@ class CosClient {
           message['TraceId'] = xml.rootElement.getElement('TraceId')?.text;
         }
       }
-      throw CosServiceError(method: method, statusCode: res.statusCode, message: message);
+      throw CosServiceError(
+          method: method, statusCode: res.statusCode, message: message);
     }
     return response;
   }
@@ -658,6 +719,7 @@ class CosClient {
 
 Map<String, String?> headerToMap(Map<String, List<String>> httpHeaders) {
   Map<String, String?> headers = {};
-  httpHeaders.forEach((name, values) => headers[name] = httpHeaders[name]?.first);
+  httpHeaders
+      .forEach((name, values) => headers[name] = httpHeaders[name]?.first);
   return headers;
 }

@@ -1,5 +1,5 @@
 name: qcloud_cos_client
-description: 腾讯云对象存储（Cloud Object Storage，COS）, 不依赖原生插件.
+description: 腾讯云对象存储(Cloud Object Storage, COS), 不依赖原生插件.
 version: 0.0.1
 homepage: https://github.com/GLeeWei
 repository: https://github.com/GLeeWei/flutter_qcloud_cos_client

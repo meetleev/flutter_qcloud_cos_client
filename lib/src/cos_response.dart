@@ -33,7 +33,8 @@ class CosResponse<T> {
   CosResponse({this.statusCode, this.headers, this.requestId, this.data});
 
   @override
-  String toString() => '{ statusCode:$statusCode, headers:$headers, requestId:$requestId }, data:$data}';
+  String toString() =>
+      '{ statusCode:$statusCode, headers:$headers, requestId:$requestId }, data:$data}';
 }
 
 class Bucket {
@@ -48,10 +49,15 @@ class Bucket {
 
   final String? bucketType;
 
-  Bucket({required this.name, required this.region, required this.creationDate, this.bucketType});
+  Bucket(
+      {required this.name,
+      required this.region,
+      required this.creationDate,
+      this.bucketType});
 
   @override
-  String toString() => '{ name:$name, region:$region, creationDate:$creationDate }';
+  String toString() =>
+      '{ name:$name, region:$region, creationDate:$creationDate }';
 }
 
 class GetServiceResult {
@@ -79,7 +85,8 @@ class PutObjectResult {
   PutObjectResult({required this.location, this.eTag, this.versionId});
 
   @override
-  String toString() => '{ eTag:$eTag, location:$location, versionId:$versionId }';
+  String toString() =>
+      '{ eTag:$eTag, location:$location, versionId:$versionId }';
 }
 
 class GetObjectResult {
@@ -94,7 +101,8 @@ class GetObjectResult {
 
   final String? mimeType;
 
-  GetObjectResult({this.eTag, this.versionId, required this.objectData, this.mimeType});
+  GetObjectResult(
+      {this.eTag, this.versionId, required this.objectData, this.mimeType});
 
   @override
   String toString() =>
@@ -132,7 +140,11 @@ class MultipleDeletedObject {
   /// 仅当对该对象的删除创建了一个删除标记，或删除的是该对象的一个删除标记时才返回该元素，值为创建或删除的删除标记的版本 ID
   final String? deleteMarkerVersionId;
 
-  MultipleDeletedObject({required this.key, this.versionId, this.deleteMarker, this.deleteMarkerVersionId});
+  MultipleDeletedObject(
+      {required this.key,
+      this.versionId,
+      this.deleteMarker,
+      this.deleteMarkerVersionId});
 
   @override
   String toString() =>
@@ -152,10 +164,12 @@ class MultipleDeletedError {
   /// 删除失败的具体错误信息
   final String? message;
 
-  MultipleDeletedError({required this.key, this.versionId, this.code, this.message});
+  MultipleDeletedError(
+      {required this.key, this.versionId, this.code, this.message});
 
   @override
-  String toString() => '{ key:$key, versionId:$versionId, code:$code, message:$message }';
+  String toString() =>
+      '{ key:$key, versionId:$versionId, code:$code, message:$message }';
 }
 
 /// 带版本信息的对象
@@ -310,7 +324,8 @@ class CosObject {
       required this.owner});
 
   @override
-  String toString() => '{ key:$key, lastModified:$lastModified, eTag:$eTag, size:$size,'
+  String toString() =>
+      '{ key:$key, lastModified:$lastModified, eTag:$eTag, size:$size,'
       ' storageClass:$storageClass, storageTier:$storageTier, owner:$owner }';
 }
 

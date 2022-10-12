@@ -5,8 +5,9 @@ import 'cos_client.dart';
 import 'logger.dart';
 
 List<String> handleHeaderOrParams(Map<String, String?> params) {
-  params = params.map(
-      (key, value) => MapEntry(Uri.encodeComponent(key.toLowerCase()), Uri.encodeComponent(value ?? '')));
+  params = params.map((key, value) => MapEntry(
+      Uri.encodeComponent(key.toLowerCase()),
+      Uri.encodeComponent(value ?? '')));
   var keys = params.keys.toList()..sort();
   var values = keys.map((e) => '$e=${params[e]}').toList().join('&');
   return [keys.join(';'), values];
@@ -71,13 +72,21 @@ class CosS3Auth {
     var headList = sHttpArr[0];
     var httpHeaders = sHttpArr[1];
     String pathName = !key.startsWith('/') ? '/$key' : key;
-    String formatString = [method.toLowerCase(), pathName, httpParams, httpHeaders, ''].join('\n');
+    String formatString = [
+      method.toLowerCase(),
+      pathName,
+      httpParams,
+      httpHeaders,
+      ''
+    ].join('\n');
     Log.d('Auth formatString---$formatString');
-    String signHttpString = hex.encode(sha1.convert(formatString.codeUnits).bytes);
+    String signHttpString =
+        hex.encode(sha1.convert(formatString.codeUnits).bytes);
     String stringToSign = ['sha1', qKeyTime, signHttpString, ''].join('\n');
     Log.d('Auth stringToSign----$stringToSign');
     String signature = hmacSha1(signKey, stringToSign);
-    String authorization = 'q-sign-algorithm=sha1&q-ak=$secretId&q-sign-time=$qKeyTime'
+    String authorization =
+        'q-sign-algorithm=sha1&q-ak=$secretId&q-sign-time=$qKeyTime'
         '&q-key-time=$qKeyTime&q-header-list=$headList'
         '&q-url-param-list=$urlParamList&q-signature=$signature';
     Log.d('Auth authorization---$authorization');

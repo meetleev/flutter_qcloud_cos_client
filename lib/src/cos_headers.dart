@@ -27,8 +27,10 @@ class CosHeaders {
 
   /// 针对本次上传进行流量控制的限速值，必须为数字，单位默认为 bit/s。限速值设置范围为819200 - 838860800，即100KB/s - 100MB/s，如果超出该范围将返回400错误
   static const String xCosTrafficLimit = 'x-cos-traffic-limit';
+
   /// 存储桶所在地域
   static const String xCosBucketRegion = 'x-cos-bucket-region';
+
   /// 存储桶 AZ 类型，当存储桶为多 AZ 存储桶时返回此头部，值固定为 MAZ。
   static const String xCosBucketAzType = 'x-cos-bucket-az-type';
 }

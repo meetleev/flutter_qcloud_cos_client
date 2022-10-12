@@ -3,7 +3,8 @@ class CosServiceError extends Error {
   final int? statusCode;
   final Map<String, dynamic> message;
 
-  CosServiceError({required this.method, this.statusCode, required this.message});
+  CosServiceError(
+      {required this.method, this.statusCode, required this.message});
 
   String get code => message['Code'] ?? 'unknown';
 
