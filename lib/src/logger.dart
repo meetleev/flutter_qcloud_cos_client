@@ -6,14 +6,6 @@ enum LogLevel {
   error,
 }
 
-final levelPrefixes = {
-  LogLevel.verbose: 'verbose',
-  LogLevel.debug: 'debug',
-  LogLevel.info: 'info',
-  LogLevel.warn: 'warning',
-  LogLevel.error: 'error',
-};
-
 class Log {
   static LogLevel logLevel = LogLevel.warn;
 

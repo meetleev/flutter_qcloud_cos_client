@@ -25,24 +25,27 @@ enum CosStorageClassType {
   deepArchive,
 }
 
-String cosStorageClassTypeToName(CosStorageClassType type) {
-  switch (type) {
-    case CosStorageClassType.standard:
-      return 'STANDARD';
-    case CosStorageClassType.maxStandard:
-      return 'MAZ_STANDARD';
-    case CosStorageClassType.standardIA:
-      return 'STANDARD_IA';
-    case CosStorageClassType.maxStandardIA:
-      return 'MAZ_STANDARD_IA';
-    case CosStorageClassType.intelligentTiering:
-      return 'INTELLIGENT_TIERING';
-    case CosStorageClassType.mazIntelligentTiering:
-      return 'MAZ_INTELLIGENT_TIERING';
-    case CosStorageClassType.archive:
-      return 'ARCHIVE';
-    case CosStorageClassType.deepArchive:
-      return 'DEEP_ARCHIVE';
+extension CosStorageClassTypeExtension on CosStorageClassType {
+  String get headerName {
+    CosStorageClassType type = CosStorageClassType.values[index];
+    switch (type) {
+      case CosStorageClassType.standard:
+        return 'STANDARD';
+      case CosStorageClassType.maxStandard:
+        return 'MAZ_STANDARD';
+      case CosStorageClassType.standardIA:
+        return 'STANDARD_IA';
+      case CosStorageClassType.maxStandardIA:
+        return 'MAZ_STANDARD_IA';
+      case CosStorageClassType.intelligentTiering:
+        return 'INTELLIGENT_TIERING';
+      case CosStorageClassType.mazIntelligentTiering:
+        return 'MAZ_INTELLIGENT_TIERING';
+      case CosStorageClassType.archive:
+        return 'ARCHIVE';
+      case CosStorageClassType.deepArchive:
+        return 'DEEP_ARCHIVE';
+    }
   }
 }
 

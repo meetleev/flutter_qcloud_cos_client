@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'dart:convert' as convert;
+import 'dart:typed_data';
 
 import 'package:crypto/crypto.dart';
 import 'package:dio/dio.dart';
@@ -139,7 +140,7 @@ class CosClient {
     headers ??= {};
     headers.addAll({
       HttpHeaders.contentTypeHeader: contentType,
-      CosHeaders.xCosStorageClass: cosStorageClassTypeToName(storageClassType),
+      CosHeaders.xCosStorageClass: storageClassType.headerName,
     });
     var res = await _sendRequest(
         method: 'PUT',
@@ -196,7 +197,6 @@ class CosClient {
         key: objectKey,
         responseType: ResponseType.bytes,
         onReceiveProgress: onReceiveProgress);
-    Log.d('getObject response:$res');
     return CosResponse<GetObjectResult>(
         statusCode: res.statusCode,
         headers: res.headers.map,
@@ -664,6 +664,11 @@ class CosClient {
     if (null != cosConfig.token && cosConfig.token!.isNotEmpty) {
       headers[CosHeaders.xCosSecurityToken] = cosConfig.token;
     }
+    Stream<Uint8List>? stream;
+    if (data is Uint8List) {
+      stream = Stream.fromIterable([data]);
+      headers[HttpHeaders.contentLengthHeader] = data.length.toString();
+    }
     var authorization = CosS3Auth.getAuth(cosConfig,
         headers: headers, method: method, key: key, params: query);
     headers['Authorization'] = authorization;
@@ -673,7 +678,7 @@ class CosClient {
     Response response;
     try {
       response = await _dio.requestUri(uri,
-          data: data,
+          data: stream ?? data,
           options: Options(
               method: method,
               headers: headers,
