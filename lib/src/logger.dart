@@ -1,3 +1,5 @@
+import 'package:flutter/foundation.dart';
+
 enum LogLevel {
   verbose,
   debug,
@@ -39,7 +41,9 @@ class Log {
 
   static void _log(LogLevel logLevel, Object message,
       [Error? error, StackTrace? stackTrace]) {
-    print('${logLevel.name} $message');
+    if (kDebugMode) {
+      print('${logLevel.name} $message');
+    }
     if (null != error) Future.error(error, stackTrace);
   }
 }

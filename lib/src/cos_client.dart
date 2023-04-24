@@ -160,7 +160,7 @@ class CosClient {
             location: (region ?? cosConfig.region)!));
   }
 
-  /// 上传 object
+  /// 下载 object
   /// [bucket] 存储桶名称.
   /// [objectKey] COS路径，即文件名称
   Future<CosResponse<GetObjectResult>> getObject({
@@ -185,8 +185,9 @@ class CosClient {
       params['versionId'] = versionId ?? finalHeaders['versionId'];
       finalHeaders.remove('versionId');
     } else {
-      if (null != versionId && versionId.isNotEmpty)
+      if (null != versionId && versionId.isNotEmpty) {
         params['versionId'] = versionId;
+      }
     }
     headers = finalHeaders;
     var url = cosConfig.url(bucket: bucket, path: objectKey, sRegion: region);
@@ -222,8 +223,9 @@ class CosClient {
       params['versionId'] = versionId ?? headers['versionId'];
       headers.remove('versionId');
     } else {
-      if (null != versionId && versionId.isNotEmpty)
+      if (null != versionId && versionId.isNotEmpty) {
         params['versionId'] = versionId;
+      }
     }
     var url = cosConfig.url(bucket: bucket, path: objectKey, sRegion: region);
     var res = await _sendRequest(
@@ -323,8 +325,9 @@ class CosClient {
       params['versionId'] = versionId ?? headers['versionId'];
       headers.remove('versionId');
     } else {
-      if (null != versionId && versionId.isNotEmpty)
+      if (null != versionId && versionId.isNotEmpty) {
         params['versionId'] = versionId;
+      }
     }
     var url = cosConfig.url(bucket: bucket, path: objectKey, sRegion: region);
     var res = await _sendRequest(
@@ -630,8 +633,9 @@ class CosClient {
       params['versionId'] = versionId ?? headers['versionId'];
       headers.remove('versionId');
     } else {
-      if (null != versionId && versionId.isNotEmpty)
+      if (null != versionId && versionId.isNotEmpty) {
         params['versionId'] = versionId;
+      }
     }
     return [headers, params];
   }
