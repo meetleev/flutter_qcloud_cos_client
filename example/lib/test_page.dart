@@ -1,7 +1,6 @@
 import 'dart:io';
 import 'dart:convert' as convert;
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:group_button/group_button.dart';
 import 'package:qcloud_cos_client/qcloud_cos_client.dart';
@@ -41,7 +40,7 @@ class _TestPageState extends State<TestPage> {
   Future<void> _getService() async {
     await _ensureCosClientNonNull();
     var res = await _client?.getService();
-    print('_getService res ==> $res');
+    debugPrint('_getService res ==> $res');
   }
 
   Future<void> _putObject({String objectKey = _defaultObjectKey}) async {
@@ -56,13 +55,12 @@ class _TestPageState extends State<TestPage> {
       headers: {
         CosHeaders.xCosMeta('test'): convert.jsonEncode(meta),
         CosHeaders.xCosTagging: meta.keys
-            .map((key) =>
-                '${Uri.encodeComponent(key)}=${Uri.encodeComponent(meta[key].toString())}')
+            .map((key) => '${Uri.encodeComponent(key)}=${Uri.encodeComponent(meta[key].toString())}')
             .toList()
             .join('&')
       },
     );
-    print('_putObject res ==> $res');
+    debugPrint('_putObject res ==> $res');
   }
 
   Future<void> _getObject({String objectKey = _defaultObjectKey}) async {
@@ -72,25 +70,23 @@ class _TestPageState extends State<TestPage> {
         bucket: _bucket,
         objectKey: objectKey,
         onReceiveProgress: (int cur, int total) {
-          print('onReceiveProgress---$cur:$total');
+          debugPrint('onReceiveProgress---$cur:$total');
         });
     if (null != res.data) {
-      var utf8 =
-          convert.utf8.decode(res.data!.objectData, allowMalformed: true);
-      print('utf8----$utf8');
+      var utf8 = convert.utf8.decode(res.data!.objectData, allowMalformed: true);
+      debugPrint('utf8----$utf8');
     }
-    print('_getObject res ==> $res');
+    debugPrint('_getObject res ==> $res');
   }
 
-  Future<void> _deleteObjectTagging(
-      {String objectKey = _defaultObjectKey}) async {
+  Future<void> _deleteObjectTagging({String objectKey = _defaultObjectKey}) async {
     await _ensureCosClientNonNull();
     var res = await _client!.deleteObjectTagging(
       region: _region,
       bucket: _bucket,
       objectKey: objectKey,
     );
-    print('_deleteObjectTagging res ==> $res');
+    debugPrint('_deleteObjectTagging res ==> $res');
   }
 
   Future<void> _putObjectTagging({String objectKey = _defaultObjectKey}) async {
@@ -101,7 +97,7 @@ class _TestPageState extends State<TestPage> {
       objectKey: objectKey,
       tags: [Tag(key: 'keyTest', value: 'valueTest')],
     );
-    print('_putObjectTagging res ==> $res');
+    debugPrint('_putObjectTagging res ==> $res');
   }
 
   Future<void> _getObjectTagging({String objectKey = _defaultObjectKey}) async {
@@ -111,7 +107,7 @@ class _TestPageState extends State<TestPage> {
       bucket: _bucket,
       objectKey: objectKey,
     );
-    print('_getObjectTagging res ==> $res');
+    debugPrint('_getObjectTagging res ==> $res');
   }
 
   Future<void> _deleteObject({String objectKey = _defaultObjectKey}) async {
@@ -121,18 +117,17 @@ class _TestPageState extends State<TestPage> {
       bucket: _bucket,
       objectKey: objectKey,
     );
-    print('_deleteObject res ==> $res');
+    debugPrint('_deleteObject res ==> $res');
   }
 
-  Future<void> _deleteMultipleObject(
-      {List<CosObjectVersionParams>? deletes}) async {
+  Future<void> _deleteMultipleObject({List<CosObjectVersionParams>? deletes}) async {
     await _ensureCosClientNonNull();
     var res = await _client!.deleteMultipleObject(
       region: _region,
       bucket: _bucket,
       deletes: deletes ??= [CosObjectVersionParams(key: _defaultObjectKey)],
     );
-    print('_deleteMultipleObject res ==> $res');
+    debugPrint('_deleteMultipleObject res ==> $res');
   }
 
   Future<void> _headObject({String objectKey = _defaultObjectKey}) async {
@@ -142,7 +137,7 @@ class _TestPageState extends State<TestPage> {
       bucket: _bucket,
       objectKey: objectKey,
     );
-    print('_headObject res ==> $res');
+    debugPrint('_headObject res ==> $res');
   }
 
   Future<void> _listObjects() async {
@@ -151,7 +146,7 @@ class _TestPageState extends State<TestPage> {
       region: _region,
       bucket: _bucket,
     );
-    print('_listObjects res ==> $res');
+    debugPrint('_listObjects res ==> $res');
   }
 
   Future<void> _listObjectVersions() async {
@@ -160,7 +155,7 @@ class _TestPageState extends State<TestPage> {
       region: _region,
       bucket: _bucket,
     );
-    print('_listObjectVersions res ==> $res');
+    debugPrint('_listObjectVersions res ==> $res');
   }
 
   Future<void> _headBucket() async {
@@ -169,7 +164,7 @@ class _TestPageState extends State<TestPage> {
       region: _region,
       bucket: _bucket,
     );
-    print('_headBucket res ==> $res');
+    debugPrint('_headBucket res ==> $res');
   }
 
   Future _ensureCosClientNonNull([bool useTempSecretKey = false]) async {
@@ -200,16 +195,11 @@ class _TestPageState extends State<TestPage> {
     var url = 'http://127.0.0.1:8080/getQCloudCosCredential';
     var req = await client.postUrl(Uri.parse(url));
     req.headers.set(HttpHeaders.contentTypeHeader, 'application/json');
-    req.add(
-        convert.utf8.encode(convert.jsonEncode(['cos:DeleteMultipleObjects'])));
+    req.add(convert.utf8.encode(convert.jsonEncode(['cos:DeleteMultipleObjects'])));
     var res = await req.close();
-    if (kDebugMode) {
-      print('_requestTempCredential-res---${res.statusCode}---');
-    }
+    debugPrint('_requestTempCredential-res---${res.statusCode}---');
     String content = await res.transform(convert.utf8.decoder).join("");
-    if (kDebugMode) {
-      print('_requestTempCredential-res---$content---');
-    }
+    debugPrint('_requestTempCredential-res---$content---');
     return content;
   }
 
