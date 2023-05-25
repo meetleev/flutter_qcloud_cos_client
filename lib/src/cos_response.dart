@@ -1,4 +1,5 @@
 import 'dart:core';
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:qcloud_cos_client/src/types.dart';
@@ -107,6 +108,26 @@ class GetObjectResult {
   @override
   String toString() =>
       '{ objectData:[Uint8List ${objectData.length}], versionId:$versionId, mimeType:$mimeType }';
+}
+
+class GetObjectFileResult {
+  /// 对象的实体标签（Entity Tag），是对象被创建时标识对象内容的信息标签，可用于检查对象的内容是否发生变化，例如"8e0b617ca298a564c3331da28dcb50df"。此头部并不一定返回对象的 MD5 值，而是根据对象上传和加密方式而有所不同
+  final String? eTag;
+
+  /// 对象的版本 ID, 当未启用版本控制时，该节点的值为空字符串；当启用版本控制时，启用版本控制之前的对象，其版本 ID 为 null；当暂停版本控制时，新上传的对象其版本 ID 为 null，且同一个对象最多只存在一个版本 ID 为 null 的对象版本
+  final String? versionId;
+
+  /// object File
+  final File objectFile;
+
+  final String? mimeType;
+
+  GetObjectFileResult(
+      {this.eTag, this.versionId, required this.objectFile, this.mimeType});
+
+  @override
+  String toString() =>
+      '{ objectFile:${objectFile.path}, versionId:$versionId, mimeType:$mimeType }';
 }
 
 class DeleteObjectResult {

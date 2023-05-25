@@ -1,5 +1,5 @@
-import 'dart:io';
 import 'dart:convert' as convert;
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:crypto/crypto.dart';
@@ -206,6 +206,57 @@ class CosClient {
             eTag: res.headers.value(HttpHeaders.etagHeader),
             versionId: res.headers.value(CosHeaders.xCosVersionId),
             objectData: res.data,
+            mimeType: res.headers.value(HttpHeaders.contentTypeHeader)));
+  }
+
+  /// 下载 object file 流式下载大文件
+  /// [bucket] 存储桶名称.
+  /// [objectKey] COS路径，即文件名称
+  Future<CosResponse<GetObjectFileResult>> getObjectFile({
+    required String bucket,
+    required String objectKey,
+    required File saveFile,
+    String? region,
+    String? versionId,
+    Map<String, String?>? headers,
+    ProgressCallback? onReceiveProgress,
+  }) async {
+    headers ??= {};
+    Map<String, String?> finalHeaders = {};
+    Map<String, String?> params = {};
+    for (var key in headers.keys) {
+      if (key.startsWith('response')) {
+        params[key] = headers[key];
+      } else {
+        finalHeaders[key] = headers[key];
+      }
+    }
+    if (finalHeaders.containsKey('versionId')) {
+      params['versionId'] = versionId ?? finalHeaders['versionId'];
+      finalHeaders.remove('versionId');
+    } else {
+      if (null != versionId && versionId.isNotEmpty) {
+        params['versionId'] = versionId;
+      }
+    }
+    headers = finalHeaders;
+    var url = cosConfig.url(bucket: bucket, path: objectKey, sRegion: region);
+    var res = await _sendRequest(
+        method: 'GET',
+        headers: headers,
+        url: url,
+        key: objectKey,
+        responseType: ResponseType.bytes,
+        onReceiveProgress: onReceiveProgress,
+        savePath: saveFile.path);
+    return CosResponse<GetObjectFileResult>(
+        statusCode: res.statusCode,
+        headers: res.headers.map,
+        requestId: res.headers.value(CosHeaders.xCosRequestId),
+        data: GetObjectFileResult(
+            eTag: res.headers.value(HttpHeaders.etagHeader),
+            versionId: res.headers.value(CosHeaders.xCosVersionId),
+            objectFile: saveFile,
             mimeType: res.headers.value(HttpHeaders.contentTypeHeader)));
   }
 
@@ -658,7 +709,8 @@ class CosClient {
       dynamic data,
       ProgressCallback? onSendProgress,
       ResponseType? responseType = ResponseType.plain,
-      ProgressCallback? onReceiveProgress}) async {
+      ProgressCallback? onReceiveProgress,
+      String? savePath}) async {
     query ??= {};
     Log.d('request query---$query');
     String sQuery = query.isNotEmpty
@@ -683,15 +735,26 @@ class CosClient {
     Log.d('request header---$headers');
     Response response;
     try {
-      response = await _dio.requestUri(uri,
-          data: stream ?? data,
-          options: Options(
-              method: method,
-              headers: headers,
-              responseType: responseType,
-              contentType: headers[HttpHeaders.contentTypeHeader]),
-          onSendProgress: onSendProgress,
-          onReceiveProgress: onReceiveProgress);
+      if (savePath == null) {
+        response = await _dio.requestUri(uri,
+            data: stream ?? data,
+            options: Options(
+                method: method,
+                headers: headers,
+                responseType: responseType,
+                contentType: headers[HttpHeaders.contentTypeHeader]),
+            onSendProgress: onSendProgress,
+            onReceiveProgress: onReceiveProgress);
+      } else {
+        response = await _dio.downloadUri(uri, savePath,
+            data: stream ?? data,
+            options: Options(
+                method: method,
+                headers: headers,
+                responseType: responseType,
+                contentType: headers[HttpHeaders.contentTypeHeader]),
+            onReceiveProgress: onReceiveProgress);
+      }
     } on DioError catch (e) {
       var res = e.response;
       Map<String, dynamic> message = {};
