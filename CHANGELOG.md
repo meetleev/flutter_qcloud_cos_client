@@ -1,3 +1,8 @@
+## 0.0.5
+
+* export cos_service_error
+* add getObjectFile method to download large files by stream
+
 ## 0.0.3
 
 * upgrade dio to 5.1.2

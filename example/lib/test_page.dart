@@ -55,7 +55,8 @@ class _TestPageState extends State<TestPage> {
       headers: {
         CosHeaders.xCosMeta('test'): convert.jsonEncode(meta),
         CosHeaders.xCosTagging: meta.keys
-            .map((key) => '${Uri.encodeComponent(key)}=${Uri.encodeComponent(meta[key].toString())}')
+            .map((key) =>
+                '${Uri.encodeComponent(key)}=${Uri.encodeComponent(meta[key].toString())}')
             .toList()
             .join('&')
       },
@@ -73,13 +74,15 @@ class _TestPageState extends State<TestPage> {
           debugPrint('onReceiveProgress---$cur:$total');
         });
     if (null != res.data) {
-      var utf8 = convert.utf8.decode(res.data!.objectData, allowMalformed: true);
+      var utf8 =
+          convert.utf8.decode(res.data!.objectData, allowMalformed: true);
       debugPrint('utf8----$utf8');
     }
     debugPrint('_getObject res ==> $res');
   }
 
-  Future<void> _deleteObjectTagging({String objectKey = _defaultObjectKey}) async {
+  Future<void> _deleteObjectTagging(
+      {String objectKey = _defaultObjectKey}) async {
     await _ensureCosClientNonNull();
     var res = await _client!.deleteObjectTagging(
       region: _region,
@@ -120,7 +123,8 @@ class _TestPageState extends State<TestPage> {
     debugPrint('_deleteObject res ==> $res');
   }
 
-  Future<void> _deleteMultipleObject({List<CosObjectVersionParams>? deletes}) async {
+  Future<void> _deleteMultipleObject(
+      {List<CosObjectVersionParams>? deletes}) async {
     await _ensureCosClientNonNull();
     var res = await _client!.deleteMultipleObject(
       region: _region,
@@ -195,7 +199,8 @@ class _TestPageState extends State<TestPage> {
     var url = 'http://127.0.0.1:8080/getQCloudCosCredential';
     var req = await client.postUrl(Uri.parse(url));
     req.headers.set(HttpHeaders.contentTypeHeader, 'application/json');
-    req.add(convert.utf8.encode(convert.jsonEncode(['cos:DeleteMultipleObjects'])));
+    req.add(
+        convert.utf8.encode(convert.jsonEncode(['cos:DeleteMultipleObjects'])));
     var res = await req.close();
     debugPrint('_requestTempCredential-res---${res.statusCode}---');
     String content = await res.transform(convert.utf8.decoder).join("");
