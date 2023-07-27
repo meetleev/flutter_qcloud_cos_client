@@ -755,7 +755,7 @@ class CosClient {
                 contentType: headers[HttpHeaders.contentTypeHeader]),
             onReceiveProgress: onReceiveProgress);
       }
-    } on DioError catch (e) {
+    } on DioException catch (e) {
       var res = e.response;
       Map<String, dynamic> message = {};
       if (null == res) throw StateError(e.toString());

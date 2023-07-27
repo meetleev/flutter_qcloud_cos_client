@@ -1,3 +1,7 @@
+## 0.0.6
+
+* upgrade dio to 5.3.0
+
 ## 0.0.5
 
 * export cos_service_error
