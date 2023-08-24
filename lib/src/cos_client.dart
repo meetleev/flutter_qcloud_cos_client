@@ -75,9 +75,9 @@ class CosConfig {
 
 class CosClient {
   final CosConfig cosConfig;
-  final Dio _dio = Dio();
+  final Dio _dio;
 
-  CosClient(this.cosConfig);
+  CosClient(this.cosConfig, {Dio? dio}) : _dio = dio ?? Dio();
 
   /// [LogLevel] 日志等级
   set logLevel(LogLevel level) => Log.logLevel = level;
