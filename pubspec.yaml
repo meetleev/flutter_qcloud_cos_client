@@ -1,6 +1,6 @@
 name: qcloud_cos_client
 description: A flutter library for tencent cloud object storage(COS), do not depend on native plugins.
-version: 0.0.6
+version: 0.0.7
 homepage: https://github.com/meetleev
 repository: https://github.com/meetleev/flutter_qcloud_cos_client
 
@@ -19,7 +19,7 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^2.0.2
+  flutter_lints: ^2.0.3
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

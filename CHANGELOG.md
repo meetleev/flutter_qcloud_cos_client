@@ -1,3 +1,7 @@
+## 0.0.7
+
+* The CosClient class adds the optional parameter dio to reuse existing Dio instances.
+
 ## 0.0.6
 
 * upgrade dio to 5.3.0
