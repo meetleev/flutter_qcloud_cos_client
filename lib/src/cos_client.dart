@@ -135,7 +135,8 @@ class CosClient {
       String? region,
       String? contentType,
       ProgressCallback? onSendProgress,
-      Map<String, String?>? headers}) async {
+      Map<String, String?>? headers,
+      bool? persistentConnection}) async {
     var url = cosConfig.url(bucket: bucket, path: objectKey, sRegion: region);
     headers ??= {};
     headers.addAll({
@@ -148,7 +149,8 @@ class CosClient {
         url: url,
         key: objectKey,
         data: data,
-        onSendProgress: onSendProgress);
+        onSendProgress: onSendProgress,
+        persistentConnection: persistentConnection);
     Log.d('putObject response:$res');
     return CosResponse<PutObjectResult>(
         statusCode: res.statusCode,
@@ -170,56 +172,7 @@ class CosClient {
     String? versionId,
     Map<String, String?>? headers,
     ProgressCallback? onReceiveProgress,
-  }) async {
-    headers ??= {};
-    Map<String, String?> finalHeaders = {};
-    Map<String, String?> params = {};
-    for (var key in headers.keys) {
-      if (key.startsWith('response')) {
-        params[key] = headers[key];
-      } else {
-        finalHeaders[key] = headers[key];
-      }
-    }
-    if (finalHeaders.containsKey('versionId')) {
-      params['versionId'] = versionId ?? finalHeaders['versionId'];
-      finalHeaders.remove('versionId');
-    } else {
-      if (null != versionId && versionId.isNotEmpty) {
-        params['versionId'] = versionId;
-      }
-    }
-    headers = finalHeaders;
-    var url = cosConfig.url(bucket: bucket, path: objectKey, sRegion: region);
-    var res = await _sendRequest(
-        method: 'GET',
-        headers: headers,
-        url: url,
-        key: objectKey,
-        responseType: ResponseType.bytes,
-        onReceiveProgress: onReceiveProgress);
-    return CosResponse<GetObjectResult>(
-        statusCode: res.statusCode,
-        headers: res.headers.map,
-        requestId: res.headers.value(CosHeaders.xCosRequestId),
-        data: GetObjectResult(
-            eTag: res.headers.value(HttpHeaders.etagHeader),
-            versionId: res.headers.value(CosHeaders.xCosVersionId),
-            objectData: res.data,
-            mimeType: res.headers.value(HttpHeaders.contentTypeHeader)));
-  }
-
-  /// 下载 object file 流式下载大文件
-  /// [bucket] 存储桶名称.
-  /// [objectKey] COS路径，即文件名称
-  Future<CosResponse<GetObjectFileResult>> getObjectFile({
-    required String bucket,
-    required String objectKey,
-    required File saveFile,
-    String? region,
-    String? versionId,
-    Map<String, String?>? headers,
-    ProgressCallback? onReceiveProgress,
+    bool? persistentConnection,
   }) async {
     headers ??= {};
     Map<String, String?> finalHeaders = {};
@@ -248,7 +201,60 @@ class CosClient {
         key: objectKey,
         responseType: ResponseType.bytes,
         onReceiveProgress: onReceiveProgress,
-        savePath: saveFile.path);
+        persistentConnection: persistentConnection);
+    return CosResponse<GetObjectResult>(
+        statusCode: res.statusCode,
+        headers: res.headers.map,
+        requestId: res.headers.value(CosHeaders.xCosRequestId),
+        data: GetObjectResult(
+            eTag: res.headers.value(HttpHeaders.etagHeader),
+            versionId: res.headers.value(CosHeaders.xCosVersionId),
+            objectData: res.data,
+            mimeType: res.headers.value(HttpHeaders.contentTypeHeader)));
+  }
+
+  /// 下载 object file 流式下载大文件
+  /// [bucket] 存储桶名称.
+  /// [objectKey] COS路径，即文件名称
+  Future<CosResponse<GetObjectFileResult>> getObjectFile({
+    required String bucket,
+    required String objectKey,
+    required File saveFile,
+    String? region,
+    String? versionId,
+    Map<String, String?>? headers,
+    ProgressCallback? onReceiveProgress,
+    bool? persistentConnection,
+  }) async {
+    headers ??= {};
+    Map<String, String?> finalHeaders = {};
+    Map<String, String?> params = {};
+    for (var key in headers.keys) {
+      if (key.startsWith('response')) {
+        params[key] = headers[key];
+      } else {
+        finalHeaders[key] = headers[key];
+      }
+    }
+    if (finalHeaders.containsKey('versionId')) {
+      params['versionId'] = versionId ?? finalHeaders['versionId'];
+      finalHeaders.remove('versionId');
+    } else {
+      if (null != versionId && versionId.isNotEmpty) {
+        params['versionId'] = versionId;
+      }
+    }
+    headers = finalHeaders;
+    var url = cosConfig.url(bucket: bucket, path: objectKey, sRegion: region);
+    var res = await _sendRequest(
+        method: 'GET',
+        headers: headers,
+        url: url,
+        key: objectKey,
+        responseType: ResponseType.bytes,
+        onReceiveProgress: onReceiveProgress,
+        savePath: saveFile.path,
+        persistentConnection: persistentConnection);
     return CosResponse<GetObjectFileResult>(
         statusCode: res.statusCode,
         headers: res.headers.map,
@@ -710,7 +716,8 @@ class CosClient {
       ProgressCallback? onSendProgress,
       ResponseType? responseType = ResponseType.plain,
       ProgressCallback? onReceiveProgress,
-      String? savePath}) async {
+      String? savePath,
+      bool? persistentConnection}) async {
     query ??= {};
     Log.d('request query---$query');
     String sQuery = query.isNotEmpty
@@ -742,6 +749,7 @@ class CosClient {
                 method: method,
                 headers: headers,
                 responseType: responseType,
+                persistentConnection: persistentConnection,
                 contentType: headers[HttpHeaders.contentTypeHeader]),
             onSendProgress: onSendProgress,
             onReceiveProgress: onReceiveProgress);
@@ -752,6 +760,7 @@ class CosClient {
                 method: method,
                 headers: headers,
                 responseType: responseType,
+                persistentConnection: persistentConnection,
                 contentType: headers[HttpHeaders.contentTypeHeader]),
             onReceiveProgress: onReceiveProgress);
       }
