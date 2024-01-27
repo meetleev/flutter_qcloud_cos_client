@@ -1,3 +1,8 @@
+## 0.0.8
+
+* upgrade dio to 5.3.4
+* upgrade xml to 6.5.0
+
 ## 0.0.7
 
 * The CosClient class adds the optional parameter dio to reuse existing Dio instances.
