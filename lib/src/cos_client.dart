@@ -105,15 +105,15 @@ class CosClient {
     var bucketElement = xml.findAllElements('Bucket');
     for (var e in bucketElement) {
       buckets.add(Bucket(
-          name: e.getElement('Name')?.value ?? '',
-          region: e.getElement('Location')?.value ?? '',
-          creationDate: e.getElement('CreationDate')?.value ?? '',
-          bucketType: e.getElement('BucketType')?.value ?? ''));
+          name: e.getElement('Name')?.innerText ?? '',
+          region: e.getElement('Location')?.innerText ?? '',
+          creationDate: e.getElement('CreationDate')?.innerText ?? '',
+          bucketType: e.getElement('BucketType')?.innerText ?? ''));
     }
     var ownerElement = xml.findAllElements('Owner').first;
     Owner owner = Owner(
-        id: ownerElement.getElement('ID')?.value ?? '',
-        displayName: ownerElement.getElement('DisplayName')?.value ?? '');
+        id: ownerElement.getElement('ID')?.innerText ?? '',
+        displayName: ownerElement.getElement('DisplayName')?.innerText ?? '');
     return CosResponse<GetServiceResult>(
       statusCode: res.statusCode,
       headers: headerToMap(res.headers.map),
@@ -340,11 +340,11 @@ class CosClient {
       deleted = [];
       for (var ele in deletedElements) {
         deleted.add(MultipleDeletedObject(
-            key: ele.getElement('Key')?.value ?? '',
-            versionId: ele.getElement('VersionId')?.value,
-            deleteMarker: ele.getElement('DeleteMarker')?.value == 'true',
+            key: ele.getElement('Key')?.innerText ?? '',
+            versionId: ele.getElement('VersionId')?.innerText,
+            deleteMarker: ele.getElement('DeleteMarker')?.innerText == 'true',
             deleteMarkerVersionId:
-                ele.getElement('DeleteMarkerVersionId')?.value));
+                ele.getElement('DeleteMarkerVersionId')?.innerText));
       }
     }
 
@@ -354,10 +354,10 @@ class CosClient {
       errors = [];
       for (var ele in errorElements) {
         errors.add(MultipleDeletedError(
-            key: ele.getElement('Key')?.value ?? '',
-            versionId: ele.getElement('VersionId')?.value,
-            code: ele.getElement('Code')?.value,
-            message: ele.getElement('Message')?.value));
+            key: ele.getElement('Key')?.innerText ?? '',
+            versionId: ele.getElement('VersionId')?.innerText,
+            code: ele.getElement('Code')?.innerText,
+            message: ele.getElement('Message')?.innerText));
       }
     }
     return CosResponse<DeleteMultipleObjectResult>(
@@ -426,8 +426,8 @@ class CosClient {
     List<Tag> tags = [];
     for (var element in tagElements) {
       tags.add(Tag(
-          key: element.getElement('Key')?.value ?? '',
-          value: element.getElement('Value')?.value ?? ''));
+          key: element.getElement('Key')?.innerText ?? '',
+          value: element.getElement('Value')?.innerText ?? ''));
     }
     return CosResponse<GetObjectTaggingResult>(
         statusCode: res.statusCode,
@@ -536,34 +536,34 @@ class CosClient {
         method: 'GET', headers: headers, url: url, query: params);
     Log.d('listObjects response:$res');
     var xml = XmlDocument.parse(res.data);
-    var name = xml.rootElement.getElement('Name')?.value ?? '';
+    var name = xml.rootElement.getElement('Name')?.innerText ?? '';
     var isTruncated =
-        xml.rootElement.getElement('IsTruncated')?.value == 'true';
-    String? nextMarker = xml.rootElement.getElement('NextMarker')?.value;
+        xml.rootElement.getElement('IsTruncated')?.innerText == 'true';
+    String? nextMarker = xml.rootElement.getElement('NextMarker')?.innerText;
     var commonPrefixesIterable =
         xml.rootElement.findAllElements('CommonPrefixes');
     List<CommonPrefixes>? commonPrefixes =
         commonPrefixesIterable.isNotEmpty ? [] : null;
     for (var element in commonPrefixesIterable) {
       commonPrefixes
-          ?.add(CommonPrefixes(element.getElement('Prefix')?.value ?? ''));
+          ?.add(CommonPrefixes(element.getElement('Prefix')?.innerText ?? ''));
     }
     var contentsIterable = xml.rootElement.findAllElements('Contents');
     List<CosObject> contents = [];
     for (var element in contentsIterable) {
       var ownerElement = element.getElement('Owner');
       contents.add(CosObject(
-          key: element.getElement('Key')?.value ?? '',
-          lastModified: element.getElement('LastModified')?.value ?? '',
-          eTag: element.getElement('ETag')?.value ?? '',
-          size: element.getElement('Size')?.value ?? '0',
+          key: element.getElement('Key')?.innerText ?? '',
+          lastModified: element.getElement('LastModified')?.innerText ?? '',
+          eTag: element.getElement('ETag')?.innerText ?? '',
+          size: element.getElement('Size')?.innerText ?? '0',
           storageClass: cosStorageClassNameToType(
-              element.getElement('StorageClass')?.value ?? ''),
-          storageTier: element.getElement('StorageTier')?.value,
+              element.getElement('StorageClass')?.innerText ?? ''),
+          storageTier: element.getElement('StorageTier')?.innerText,
           owner: Owner(
-              id: ownerElement?.getElement('ID')?.value ?? '',
+              id: ownerElement?.getElement('ID')?.innerText ?? '',
               displayName:
-                  ownerElement?.getElement('DisplayName')?.value ?? '')));
+                  ownerElement?.getElement('DisplayName')?.innerText ?? '')));
     }
     return CosResponse<ListBucketObjectsResult>(
         statusCode: res.statusCode,
@@ -609,50 +609,50 @@ class CosClient {
         method: 'GET', headers: headers, url: url, query: params);
     Log.d('listObjectVersions response:$res');
     var xml = XmlDocument.parse(res.data);
-    var name = xml.rootElement.getElement('Name')?.value ?? '';
+    var name = xml.rootElement.getElement('Name')?.innerText ?? '';
     var isTruncated =
-        xml.rootElement.getElement('IsTruncated')?.value == 'true';
-    String? nextMarker = xml.rootElement.getElement('NextMarker')?.value;
+        xml.rootElement.getElement('IsTruncated')?.innerText == 'true';
+    String? nextMarker = xml.rootElement.getElement('NextMarker')?.innerText;
     var commonPrefixesIterable =
         xml.rootElement.findAllElements('CommonPrefixes');
     List<CommonPrefixes>? commonPrefixes =
         commonPrefixesIterable.isNotEmpty ? [] : null;
     for (var element in commonPrefixesIterable) {
       commonPrefixes
-          ?.add(CommonPrefixes(element.getElement('Prefix')?.value ?? ''));
+          ?.add(CommonPrefixes(element.getElement('Prefix')?.innerText ?? ''));
     }
     var versionsIterable = xml.rootElement.findAllElements('Contents');
     List<CosObjectVersion> versions = [];
     for (var element in versionsIterable) {
       var ownerElement = element.getElement('Owner');
       versions.add(CosObjectVersion(
-          key: element.getElement('Key')?.value ?? '',
-          lastModified: element.getElement('LastModified')?.value ?? '',
-          isLatest: element.getElement('IsLatest')?.value == 'true',
-          eTag: element.getElement('ETag')?.value ?? '',
-          size: element.getElement('Size')?.value ?? '0',
+          key: element.getElement('Key')?.innerText ?? '',
+          lastModified: element.getElement('LastModified')?.innerText ?? '',
+          isLatest: element.getElement('IsLatest')?.innerText == 'true',
+          eTag: element.getElement('ETag')?.innerText ?? '',
+          size: element.getElement('Size')?.innerText ?? '0',
           storageClass: cosStorageClassNameToType(
-              element.getElement('StorageClass')?.value ?? ''),
-          storageTier: element.getElement('StorageTier')?.value,
-          versionId: element.getElement('VersionId')?.value,
+              element.getElement('StorageClass')?.innerText ?? ''),
+          storageTier: element.getElement('StorageTier')?.innerText,
+          versionId: element.getElement('VersionId')?.innerText,
           owner: Owner(
-              id: ownerElement?.getElement('ID')?.value ?? '',
+              id: ownerElement?.getElement('ID')?.innerText ?? '',
               displayName:
-                  ownerElement?.getElement('DisplayName')?.value ?? '')));
+                  ownerElement?.getElement('DisplayName')?.innerText ?? '')));
     }
     var deleteMarkerIterable = xml.rootElement.findAllElements('DeleteMarker');
     List<DeleteMarker> deleteMarkers = [];
     for (var element in deleteMarkerIterable) {
       var ownerElement = element.getElement('Owner');
       deleteMarkers.add(DeleteMarker(
-          key: element.getElement('Key')?.value ?? '',
-          lastModified: element.getElement('LastModified')?.value ?? '',
-          isLatest: element.getElement('IsLatest')?.value == 'true',
-          versionId: element.getElement('VersionId')?.value,
+          key: element.getElement('Key')?.innerText ?? '',
+          lastModified: element.getElement('LastModified')?.innerText ?? '',
+          isLatest: element.getElement('IsLatest')?.innerText == 'true',
+          versionId: element.getElement('VersionId')?.innerText,
           owner: Owner(
-              id: ownerElement?.getElement('ID')?.value ?? '',
+              id: ownerElement?.getElement('ID')?.innerText ?? '',
               displayName:
-                  ownerElement?.getElement('DisplayName')?.value ?? '')));
+                  ownerElement?.getElement('DisplayName')?.innerText ?? '')));
     }
     return CosResponse<ListObjectVersionsResult>(
         statusCode: res.statusCode,
@@ -786,11 +786,13 @@ class CosClient {
             data.contains('<') &&
             data.contains('>')) {
           var xml = XmlDocument.parse(data);
-          message['Code'] = xml.rootElement.getElement('Code')?.value;
-          message['Message'] = xml.rootElement.getElement('Message')?.value;
-          message['Resource'] = xml.rootElement.getElement('Resource')?.value;
-          message['RequestId'] = xml.rootElement.getElement('RequestId')?.value;
-          message['TraceId'] = xml.rootElement.getElement('TraceId')?.value;
+          message['Code'] = xml.rootElement.getElement('Code')?.innerText;
+          message['Message'] = xml.rootElement.getElement('Message')?.innerText;
+          message['Resource'] =
+              xml.rootElement.getElement('Resource')?.innerText;
+          message['RequestId'] =
+              xml.rootElement.getElement('RequestId')?.innerText;
+          message['TraceId'] = xml.rootElement.getElement('TraceId')?.innerText;
         }
       }
       throw CosServiceError(
