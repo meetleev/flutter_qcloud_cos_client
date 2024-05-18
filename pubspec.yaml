@@ -4,10 +4,9 @@ version: 0.0.8
 homepage: https://github.com/meetleev
 repository: https://github.com/meetleev/flutter_qcloud_cos_client
 topics:
-  - tencent_cloud
-  - cloud_object_storage
-  - COS
-
+  - tencent-cloud
+  - cloud-object-storage
+  - cos
 
 environment:
   sdk: '>=2.19.0 <4.0.0'
