@@ -2,7 +2,7 @@ import 'dart:core';
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:qcloud_cos_client/src/types.dart';
+import 'types.dart';
 
 typedef Headers = Map<String, dynamic>;
 

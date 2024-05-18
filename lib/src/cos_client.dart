@@ -4,12 +4,12 @@ import 'dart:typed_data';
 
 import 'package:crypto/crypto.dart';
 import 'package:dio/dio.dart';
-import 'package:qcloud_cos_client/src/cos_service_error.dart';
 import 'package:xml/xml.dart';
 
 import 'cos_auth.dart';
 import 'cos_headers.dart';
 import 'cos_response.dart';
+import 'cos_service_error.dart';
 import 'logger.dart';
 import 'types.dart';
 
@@ -108,7 +108,7 @@ class CosClient {
           name: e.getElement('Name')?.innerText ?? '',
           region: e.getElement('Location')?.innerText ?? '',
           creationDate: e.getElement('CreationDate')?.innerText ?? '',
-          bucketType: e.getElement('BucketType')?.innerText ?? ''));
+          bucketType: e.getElement('BucketType')?.innerText));
     }
     var ownerElement = xml.findAllElements('Owner').first;
     Owner owner = Owner(
