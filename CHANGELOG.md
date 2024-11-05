@@ -1,3 +1,7 @@
+## 0.0.8+1
+
+* upgrade dio to 5.7.0
+
 ## 0.0.8
 
 * upgrade dio to 5.3.4
