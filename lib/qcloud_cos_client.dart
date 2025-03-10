@@ -1,4 +1,4 @@
-library tencent_cos_client;
+library;
 
 export 'src/cos_client.dart';
 export 'src/cos_headers.dart';

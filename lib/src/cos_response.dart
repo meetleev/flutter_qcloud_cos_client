@@ -39,7 +39,7 @@ class CosResponse<T> {
 }
 
 class Bucket {
-  /// 存储桶的名称，格式为<bucketname-appid>，例如examplebucket-1250000000
+  /// 存储桶的名称，格式为bucketname-appid，例如examplebucket-1250000000
   final String name;
 
   /// 存储桶所在地域
@@ -352,7 +352,7 @@ class CosObject {
 
 /// getBucket/listObjects 接口返回值
 class ListBucketObjectsResult {
-  /// 存储桶的名称，格式为<BucketName-APPID>
+  /// 存储桶的名称，格式为BucketName-APPID
   final String name;
 
   /// 对象条目
@@ -410,7 +410,7 @@ class DeleteMarker {
 
 /// listObjectVersions 接口返回值
 class ListObjectVersionsResult {
-  /// 存储桶的名称，格式为<BucketName-APPID>
+  /// 存储桶的名称，格式为BucketName-APPID
   final String name;
 
   /// 对象版本条目

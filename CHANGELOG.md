@@ -1,3 +1,6 @@
+## 0.0.9
+* Updates minimum supported SDK version to Flutter 3.22/Dart 3.4.
+
 ## 0.0.8+1
 
 * upgrade dio to 5.7.0
